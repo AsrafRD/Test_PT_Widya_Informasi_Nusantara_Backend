@@ -1,9 +1,11 @@
+import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 
+dotenv.config();
 const app = express();
 
 app.use(cors({
