@@ -1,18 +1,17 @@
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import User from "../models/user.js";
+// import bcrypt from 'bcryptjs';
+import argon2 from 'argon2';
+import jwt from 'jsonwebtoken';
+import User from '../models/user.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 export const register = async (req, res) => {
   const { name, email, password, gender } = req.body;
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await argon2.hash(password, 10);
 
   try {
-    const newUser = await User.create({
-      name,
-      email,
-      password: hashedPassword,
-      gender
-    });
+    const newUser = await User.create({ name, email, password: hashedPassword, gender });
     res.status(201).json({ message: 'User created successfully', newUser });
   } catch (error) {
     res.status(400).json({ error: 'User already exists' });
@@ -21,21 +20,27 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
-  const user = await User.findOne({ where: { email } });
+  const user = await User.findOne({ email });
 
-  if (!user || !await bcrypt.compare(password, user.password)) {
-    return res.status(400).json({ error: 'Invalid credentials' });
+  if (!user || !await argon2.verify(user.password, password)) {
+    return res.status(400).json({ error: 'Account Not Found' });
   }
 
-  const token = jwt.sign({ id: user.id }, "adsf3e534tfr453645gfsdv334363fdefgdsxf", { expiresIn: '1h' });
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
   res.json({ token });
 };
 
-export const logout = async (req, res) => {
-  res.json({ message: 'Logout successful' });
+export const getProfile = async (req, res) => {
+  const user = await User.findById(req.user.id).select('-password');
+  res.json(user);
 };
 
-export const profile = async (req, res) => {
-  const user = await User.findByPk(req.user.id);
-  res.json({ name: user.name, email: user.email, gender: user.gender });
+export const deleteAllUsers = async (req, res) => {
+  try {
+    await User.deleteMany({});
+    res.json({ message: 'All users deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting all users:', error);
+    res.status(500).json({ error: 'Failed to delete all users' });
+  }
 };

@@ -1,29 +1,26 @@
-import { DataTypes } from "sequelize";
-import sequelize from "./index.js";
-import User from "./user.js";
+import mongoose from 'mongoose';
 
-const Product = sequelize.define('Product', {
+const productSchema = new mongoose.Schema({
   name: {
-    type: DataTypes.STRING,
-    allowNull: false
+    type: String,
+    required: true,
   },
   description: {
-    type: DataTypes.STRING
+    type: String,
+    required: true,
   },
   price: {
-    type: DataTypes.FLOAT,
-    allowNull: false
+    type: Number,
+    required: true,
   },
-  userId: {
-    type: DataTypes.INTEGER,
-    references: {
-      model: User,
-      key: 'id'
-    }
-  }
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  },
+}, {
+  timestamps: true,
 });
 
+const Product = mongoose.model('Product', productSchema);
 
-Product.belongsTo(User, { foreignKey: 'userId' });
-
-export default Product
+export default Product;
