@@ -13,7 +13,7 @@ const app = express();
 
 app.use(cors({
   credentials: true,
-  origin: 'https://my-auth-app-three.vercel.app', 
+  origin: 'https://my-auth-app-three.vercel.app/', 
 }));
 
 app.use(express.json());
