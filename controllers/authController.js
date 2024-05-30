@@ -6,7 +6,6 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const register = async (req, res) => {
-  console.log('Request body:', req.body);
   const { name, email, password, gender } = req.body;
   const hashedPassword = await argon2.hash(password, 10);
 
@@ -14,7 +13,6 @@ export const register = async (req, res) => {
     const newUser = await User.create({ name, email, password: hashedPassword, gender });
     res.status(201).json({ message: 'User created successfully', newUser });
   } catch (error) {
-    console.error('Error creating user:', error);
     res.status(400).json({ error: 'User already exists' });
   }
 };

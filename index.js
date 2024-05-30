@@ -19,6 +19,10 @@ connectDB()
 
 const app = express();
 
+app.get('/halo', (req, res) => {
+  res.send('Hallo Dunia Indonesia');
+});
+
 const swaggerDocument = YAML.load('./swagger.yaml');
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
