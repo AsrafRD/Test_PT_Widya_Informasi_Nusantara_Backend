@@ -1,16 +1,21 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import connectDB from './config/db.js';
-import cors from "cors";
+import cors from 'cors';
 import authRoutes from './routes/authRoutes.js';
 import productRoutes from './routes/productRoutes.js';
-
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
 
 dotenv.config();
 
-connectDB();
+connectDB()
+  .then(() => {
+    console.log('Database connected successfully');
+  })
+  .catch((error) => {
+    console.error('Database connection error:', error);
+  });
 
 const app = express();
 
@@ -20,7 +25,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use(cors({
   credentials: true,
-  origin: 'http://localhost:3000', 
+  origin: 'https://my-auth-app-three.vercel.app',
 }));
 
 app.use(express.json());
